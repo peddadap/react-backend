@@ -2,7 +2,19 @@ var express = require('express');
 var router = express.Router();
 var models = require('../models');
 var multer = require('multer');
-var upload = multer({ dest: '/tmp/' });
+const excelToJson = require('convert-excel-to-json');
+var storage= multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, '/tmp/')
+  },
+  filename: function (req, file, cb) {
+    var fileName = new Date().toISOString().substring(0,19) + '-'+ file.originalname ;
+    cb(null, fileName);
+  }
+})
+var upload = multer({ storage: storage })
+
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -10,6 +22,7 @@ router.get('/', function(req, res, next) {
 
 router.get('/tickets', function(req, res, next) {
   models.Tickets.findAll().then(function(tickets) {
+    //console.log(JSON.stringify(tickets));
     res.json(tickets);
   });
 });
@@ -22,10 +35,21 @@ router.get('/tickets', function(req, res, next) {
 });*/
 
 router.post('/ticket/new', upload.any(), function(req, res, next) {
-    models.Tickets.create({ type: req.body.ticketType,status:req.body.status,priority:req.body.priority}).then(function() {
     console.log(req.body, 'Body');
     console.log(req.files, 'files');
-    res.end();
+    const result = excelToJson({
+      sourceFile: req.files[0].path,
+      header:{
+        rows: 1
+    },
+    columnToKey: {
+      '*': '{{columnHeader}}'
+    },
+    outputJSON: true
+  });
+  models.Tickets.create({ type: req.body.ticketType,status:req.body.status,priority:req.body.priority}).then(function() {
+   
+  res.end();
   });
 });
 
