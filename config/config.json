@@ -3,8 +3,8 @@
   "development": {
     "username": "sa",
     "password": "Welcome1",
-    "database": "react",
-    "host": "127.0.0.1",
+    "database": "TicketSystem",
+    "host": "IN-LPT-068",
     "port": 1433,
     "dialect": "mssql",
     "options": {
