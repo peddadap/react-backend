@@ -26,6 +26,14 @@ router.get('/tickets', function(req, res, next) {
     res.json(tickets);
   });
 });
+
+router.get('/jsonData', function(req, res, next) {
+  models.Terminations.findAll().then(function(terminations) {
+    console.log('Terminations from DB: '+terminations);
+    res.json(terminations);
+  });
+});
+
 /* POST new user. */
 /*router.post('/ticket/new', function(req, res) {
   console.log(req.body)
