@@ -4,7 +4,7 @@
     "username": "sa",
     "password": "Welcome1",
     "database": "TicketSystem",
-    "host": "IN-LPT-068",
+    "host": "localhost",
     "port": 1433,
     "dialect": "mssql",
     "options": {
