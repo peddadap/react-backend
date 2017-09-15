@@ -3,6 +3,8 @@ var router = express.Router();
 var models = require('../models');
 var multer = require('multer');
 var upload = multer({ dest: '/tmp/' });
+var excelToJson = require('convert-excel-to-json');
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -14,10 +16,10 @@ router.get('/tickets', function(req, res, next) {
   });
 });
 
-router.get('/jsonData', function(req, res, next) {
-  models.Terminations.findAll().then(function(terminations) {
-    console.log('Terminations from DB: '+terminations);
-    res.json(terminations);
+router.get('/issuances', function(req, res, next) {
+  models.Issuances.findAll().then(function(issuances) {
+    console.log('Issuances from DB: '+issuances);
+    res.json(issuances);
   });
 });
 
@@ -32,7 +34,13 @@ router.get('/jsonData', function(req, res, next) {
 router.post('/ticket/new', upload.any(), function(req, res, next) {
     models.Tickets.create({ type: req.body.ticketType,status:req.body.status,priority:req.body.priority}).then(function() {
     console.log(req.body, 'Body');
-    console.log(req.files, 'files');
+    console.log(req.files,'Files');
+    console.log('>>>>>>>>>'+req.files[0].destination + req.files[0].filename);
+    var result = excelToJson({
+      sourceFile: req.files[0].destination + req.files[0].filename
+    });
+    
+    console.log(result.Sheet1[1], 'files');
     res.end();
   });
 });
