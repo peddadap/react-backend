@@ -27,8 +27,8 @@ router.get('/tickets', function(req, res, next) {
   });
 });
 
-router.get('/jsonData', function(req, res, next) {
-  models.Terminations.findAll().then(function(terminations) {
+router.get('/grants', function(req, res, next) {
+  models.Grants.findAll().then(function(terminations) {
     console.log('Terminations from DB: '+terminations);
     res.json(terminations);
   });

@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function(sequelize, DataTypes) {
-  var Grant = sequelize.define('Grant', {
+  var Grants = sequelize.define('Grants', {
     "id": { type:DataTypes.INTEGER,primaryKey: true,autoIncrement: true },
     "AccountNumber": { type: DataTypes.STRING },
     "Name1": { type: DataTypes.STRING },
@@ -25,5 +25,5 @@ module.exports = function(sequelize, DataTypes) {
       }
     }
   });
-  return Grant;
+  return Grants;
 };
