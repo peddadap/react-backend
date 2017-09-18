@@ -28,6 +28,27 @@ router.get('/tickets', function(req, res, next) {
   });
 });
 
+router.get('/vesting', function(req, res, next) {
+  models.Vesting.findAll().then(function(vesting) {
+    console.log('Vesting from DB: '+vesting);
+    res.json(vesting);
+  });
+});
+
+router.get('/grants', function(req, res, next) {
+  models.Grants.findAll().then(function(terminations) {
+    console.log('Grants from DB: '+terminations);
+    res.json(terminations);
+  });
+});
+
+router.get('/terminations', function(req, res, next) {
+  models.Terminations.findAll().then(function(terminations) {
+    console.log('Terminations from DB: '+terminations);
+    res.json(terminations);
+  });
+});
+
 router.get('/issuances', function(req, res, next) {
   models.Issuances.findAll().then(function(issuances) {
     console.log('Issuances from DB: '+issuances);
@@ -35,12 +56,6 @@ router.get('/issuances', function(req, res, next) {
   });
 });
 
-router.get('/grants', function(req, res, next) {
-  models.Grants.findAll().then(function(terminations) {
-    console.log('Terminations from DB: '+terminations);
-    res.json(terminations);
-  });
-});
 
 /* POST new user. */
 /*router.post('/ticket/new', function(req, res) {
