@@ -28,6 +28,16 @@ router.get('/tickets', function(req, res, next) {
   });
 });
 
+router.get('/ticket_meta', function(req, res, next) {
+  models.Tickets.findAll({
+    where: {
+      id: req.query.id
+    }
+  }).then(function(ticket_meta) {
+    res.json(ticket_meta);
+  });
+});
+
 router.get('/vesting', function(req, res, next) {
   models.Vesting.findAll().then(function(vesting) {
     console.log('Vesting from DB: '+vesting);
@@ -78,7 +88,15 @@ router.post('/ticket/new', upload.any(), function(req, res, next) {
       },
       outputJSON: true
     });
-    models.Tickets.create({ type: req.body.ticketType,status:req.body.status,priority:req.body.priority}).then(function() {
+    models.Tickets.create({ 
+      company_number: req.body.company_number,
+      child_company_number: req.body.child_company_number,
+      control_account_number: req.body.control_account_number,
+      treasure_account_number: req.body.treasure_account_number,
+      type: req.body.ticketType,
+      status:req.body.status,
+      priority:req.body.priority
+    }).then(function() {
       res.end();
     });
     var resultnew = result.Sheet1;
