@@ -2,14 +2,12 @@ var express = require('express');
 var router = express.Router();
 var models = require('../models');
 var multer = require('multer');
-
-var excelToJson = require('convert-excel-to-json');
+const excelToJson = require('convert-excel-to-json');
 var storage= multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'D:\\tmp\\');
+    cb(null, '/tmp/');
   },
   filename: function (req, file, cb) {
-//    var fileName = new Date().toISOString().substring(0,19) + '-'+ file.originalname ;
     var fileName = file.originalname ;
     cb(null, fileName);
   }
@@ -66,8 +64,6 @@ router.get('/issuances', function(req, res, next) {
 });*/
 
 router.post('/ticket/new', upload.any(), function(req, res, next) {
-    console.log(req.body, 'Body');
-    console.log(req.files, 'files');
     var result = excelToJson({
       sourceFile: req.files[0].path,
       header:{
@@ -78,11 +74,10 @@ router.post('/ticket/new', upload.any(), function(req, res, next) {
       },
       outputJSON: true
     });
-    models.Tickets.create({ type: req.body.ticketType,status:req.body.status,priority:req.body.priority}).then(function() {
+    models.Tickets.create({ type: req.body.ticketType,status:req.body.status,priority:req.body.priority,status:'created',companyno:req.body.childCo}).then(function() {
       res.end();
     });
     var resultnew = result.Sheet1;
-    console.log('Data >>>>>>' + JSON.stringify(resultnew));    
     models.Issuances.bulkCreate(resultnew)
     .then(function(response,error){
       console.log(error);

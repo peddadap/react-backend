@@ -7,7 +7,8 @@ module.exports = function(sequelize, DataTypes) {
     created_date:{type:DataTypes.DATE,defaultValue: sequelize.fn('GETDATE')},
     submitted_date: DataTypes.DATE,
     status: DataTypes.STRING,
-    priority:DataTypes.STRING 
+    priority:DataTypes.STRING,
+    companyno:DataTypes.STRING 
   }, {
     classMethods: {
       associate: function(models) {
