@@ -26,6 +26,16 @@ router.get('/tickets', function(req, res, next) {
   });
 });
 
+router.get('/ticket_meta', function(req, res, next) {
+  models.Tickets.findAll({
+    where: {
+      id: req.query.id
+    }
+  }).then(function(ticket_meta) {
+    res.json(ticket_meta);
+  });
+});
+
 router.get('/vesting', function(req, res, next) {
   models.Vesting.findAll().then(function(vesting) {
     console.log('Vesting from DB: '+vesting);
@@ -62,30 +72,40 @@ router.get('/issuances', function(req, res, next) {
     res.redirect('/');
   });
 });*/
-
 router.post('/ticket/new', upload.any(), function(req, res, next) {
-    var result = excelToJson({
-      sourceFile: req.files[0].path,
-      header:{
-        rows: 1
-      },
-      columnToKey: {
-        '*': '{{columnHeader}}'
-      },
-      outputJSON: true
-    });
-    models.Tickets.create({ type: req.body.ticketType,status:req.body.status,priority:req.body.priority,status:'created',companyno:req.body.childCo}).then(function() {
-      res.end();
-    });
-    var resultnew = result.Sheet1;
-    models.Issuances.bulkCreate(resultnew)
-    .then(function(response,error){
-      console.log(error);
-      res.json(response);
-    })
-    .catch(function(error){
-      console.log(error);
-    })
+  console.log(req.body, 'Body');
+  console.log(req.files, 'files');
+  var result = excelToJson({
+    sourceFile: req.files[0].path,
+    header:{
+      rows: 1
+    },
+    columnToKey: {
+      '*': '{{columnHeader}}'
+    },
+    outputJSON: true
+  });
+  models.Tickets.create({ 
+    company_number: req.body.company_number,
+    child_company_number: req.body.child_company_number,
+    control_account_number: req.body.control_account_number,
+    treasure_account_number: req.body.treasure_account_number,
+    type: req.body.ticketType,
+    status:req.body.status,
+    priority:req.body.priority
+  }).then(function() {
+    res.end();
+  });
+  var resultnew = result.Sheet1;
+  console.log('Data >>>>>>' + JSON.stringify(resultnew));    
+  models.Issuances.bulkCreate(resultnew)
+  .then(function(response,error){
+    console.log(error);
+    res.json(response);
+  })
+  .catch(function(error){
+    console.log(error);
+  })
 });
 
 module.exports = router;
