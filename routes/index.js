@@ -9,7 +9,6 @@ var storage= multer.diskStorage({
     cb(null, 'D:\\tmp\\');
   },
   filename: function (req, file, cb) {
-//    var fileName = new Date().toISOString().substring(0,19) + '-'+ file.originalname ;
     var fileName = file.originalname ;
     cb(null, fileName);
   }
@@ -23,7 +22,6 @@ router.get('/', function(req, res, next) {
 
 router.get('/tickets', function(req, res, next) {
   models.Tickets.findAll().then(function(tickets) {
-    //console.log(JSON.stringify(tickets));
     res.json(tickets);
   });
 });
@@ -76,8 +74,8 @@ router.get('/issuances', function(req, res, next) {
 });*/
 
 router.post('/ticket/new', upload.any(), function(req, res, next) {
-    console.log(req.body, 'Body');
-    console.log(req.files, 'files');
+    //console.log(req.body, 'Body');
+    //console.log(req.files, 'files');
     var result = excelToJson({
       sourceFile: req.files[0].path,
       header:{
@@ -96,19 +94,53 @@ router.post('/ticket/new', upload.any(), function(req, res, next) {
       type: req.body.ticketType,
       status:req.body.status,
       priority:req.body.priority
-    }).then(function() {
-      res.end();
-    });
-    var resultnew = result.Sheet1;
-    console.log('Data >>>>>>' + JSON.stringify(resultnew));    
-    models.Issuances.bulkCreate(resultnew)
-    .then(function(response,error){
-      console.log(error);
-      res.json(response);
-    })
-    .catch(function(error){
-      console.log(error);
-    })
+    }).then(resp => {
+      if(resp.id) {
+        var resultnew = result.Sheet1;
+        //Need to optimize this loop
+        for(var i=0; i< Object.keys(resultnew).length; i++) {
+          var hashval = resultnew[i];
+          resultnew[i]['TicketId'] = resp.id;
+        }
+        //Need to optimize to pick model names dynamically
+        if(req.body.ticketType === 'Orginial Issuance') {    
+          models.Issuances.bulkCreate(resultnew)
+          .then(function(response,error){
+            res.json(response);
+          })
+          .catch(function(error){
+            console.log(error);
+          })
+        }
+        if(req.body.ticketType === 'Grants') {    
+          models.Grants.bulkCreate(resultnew)
+          .then(function(response,error){
+            res.json(response);
+          })
+          .catch(function(error){
+            console.log(error);
+          })
+        }
+        if(req.body.ticketType === 'Vestings') {    
+          models.Vesting.bulkCreate(resultnew)
+          .then(function(response,error){
+            res.json(response);
+          })
+          .catch(function(error){
+            console.log(error);
+          })
+        }
+        if(req.body.ticketType === 'Terminations') {    
+          models.Terminations.bulkCreate(resultnew)
+          .then(function(response,error){
+            res.json(response);
+          })
+          .catch(function(error){
+            console.log(error);
+          })
+        }
+      }
+    }); 
 });
 
 module.exports = router;
