@@ -3,6 +3,7 @@
 module.exports = function(sequelize, DataTypes) {
   var Issuances = sequelize.define('Issuances', {
     "id": { type:DataTypes.INTEGER,primaryKey: true,autoIncrement: true },
+    "TicketId": { type:DataTypes.INTEGER },
     "AccountNumber": { type: DataTypes.STRING },
     "Name1": { type: DataTypes.STRING },
     "Name2": { type: DataTypes.STRING },
