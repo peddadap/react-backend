@@ -7,6 +7,12 @@ var basename  = path.basename(module.filename);
 var env       = process.env.NODE_ENV || 'development';
 var config    = require(__dirname + '/../config/config.json')[env];
 var db        = {};
+var opts = {
+  define: {
+      //prevent sequelize from pluralizing table names
+      freezeTableName: true
+  }
+}
 
 if (config.use_env_variable) {
   var sequelize = new Sequelize(process.env[config.use_env_variable]);
@@ -32,5 +38,14 @@ Object.keys(db).forEach(function(modelName) {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
-
+//relation ship between Request and Attachments
+db.Request.hasMany(db.Attachment,{foreignKey: 'RequestID', sourceKey: 'ID'});
+// other relatioships
+db.Request.hasMany(db.Issuance,{foreignKey: 'RequestID', sourceKey: 'ID'});
+// other relatioships
+db.Request.hasMany(db.Termination,{foreignKey: 'RequestID', sourceKey: 'ID'});
+// other relatioships
+db.Request.hasMany(db.Vesting,{foreignKey: 'RequestID', sourceKey: 'ID'});
+// other relatioships
+//db.Request.hasMany(db.Grant);
 module.exports = db;

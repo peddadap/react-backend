@@ -1,8 +1,9 @@
 'use strict';
 
 module.exports = function(sequelize, DataTypes) {
-  var Issuances = sequelize.define('Issuances', {
-    "id": { type:DataTypes.INTEGER,primaryKey: true,autoIncrement: true },
+  var Issuance = sequelize.define('Issuance', {
+    "ID": { type:DataTypes.INTEGER,primaryKey: true,autoIncrement: true },
+    "RequestID":{ type:DataTypes.INTEGER },
     "AccountNumber": { type: DataTypes.STRING },
     "Name1": { type: DataTypes.STRING },
     "Name2": { type: DataTypes.STRING },
@@ -49,5 +50,5 @@ module.exports = function(sequelize, DataTypes) {
       }
     }
   });
-  return Issuances;
+  return Issuance;
 };

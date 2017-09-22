@@ -20,8 +20,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/tickets', function(req, res, next) {
-  models.Tickets.findAll().then(function(tickets) {
-    //console.log(JSON.stringify(tickets));
+  models.Request.findAll().then(function(tickets) {
     res.json(tickets);
   });
 });
@@ -66,46 +65,80 @@ router.get('/issuances', function(req, res, next) {
 
 
 /* POST new user. */
-/*router.post('/ticket/new', function(req, res) {
+router.post('/uploadHandler', function(req, res) {
+  
   console.log(req.body)
-  models.Tickets.create({ type: req.body.type,submitted_date:req.body.submitted_date,created_date:req.body.created_date,status:req.body.status}).then(function() {
-    res.redirect('/');
+ 
   });
-});*/
+
 router.post('/ticket/new', upload.any(), function(req, res, next) {
-  console.log(req.body, 'Body');
-  console.log(req.files, 'files');
-  var result = excelToJson({
-    sourceFile: req.files[0].path,
-    header:{
-      rows: 1
-    },
-    columnToKey: {
-      '*': '{{columnHeader}}'
-    },
-    outputJSON: true
-  });
-  models.Tickets.create({ 
-    company_number: req.body.company_number,
-    child_company_number: req.body.child_company_number,
-    control_account_number: req.body.control_account_number,
-    treasure_account_number: req.body.treasure_account_number,
-    type: req.body.ticketType,
-    status:req.body.status,
-    priority:req.body.priority
-  }).then(function() {
-    res.end();
-  });
-  var resultnew = result.Sheet1;
-  console.log('Data >>>>>>' + JSON.stringify(resultnew));    
-  models.Issuances.bulkCreate(resultnew)
-  .then(function(response,error){
-    console.log(error);
-    res.json(response);
-  })
-  .catch(function(error){
-    console.log(error);
-  })
+    //console.log(req.body, 'Body');
+    //console.log(req.files, 'files');
+    var result = excelToJson({
+      sourceFile: req.files[0].path,
+      header:{
+        rows: 1
+      },
+      columnToKey: {
+        '*': '{{columnHeader}}'
+      },
+      outputJSON: true
+    });
+    models.Tickets.create({ 
+      company_number: req.body.company_number,
+      child_company_number: req.body.child_company_number,
+      control_account_number: req.body.control_account_number,
+      treasure_account_number: req.body.treasure_account_number,
+      type: req.body.ticketType,
+      status:req.body.status,
+      priority:req.body.priority
+    }).then(resp => {
+      if(resp.id) {
+        var resultnew = result.Sheet1;
+        //Need to optimize this loop
+        for(var i=0; i< Object.keys(resultnew).length; i++) {
+          var hashval = resultnew[i];
+          resultnew[i]['TicketId'] = resp.id;
+        }
+        //Need to optimize to pick model names dynamically
+        if(req.body.ticketType === 'Orginial Issuance') {    
+          models.Issuance.bulkCreate(resultnew)
+          .then(function(response,error){
+            res.json(response);
+          })
+          .catch(function(error){
+            console.log(error);
+          })
+        }
+        if(req.body.ticketType === 'Grants') {    
+          models.Grant.bulkCreate(resultnew)
+          .then(function(response,error){
+            res.json(response);
+          })
+          .catch(function(error){
+            console.log(error);
+          })
+        }
+        if(req.body.ticketType === 'Vestings') {    
+          models.Vesting.bulkCreate(resultnew)
+          .then(function(response,error){
+            res.json(response);
+          })
+          .catch(function(error){
+            console.log(error);
+          })
+        }
+        if(req.body.ticketType === 'Terminations') {    
+          models.Termination.bulkCreate(resultnew)
+          .then(function(response,error){
+            res.json(response);
+          })
+          .catch(function(error){
+            console.log(error);
+          })
+        }
+      }
+    }); 
 });
 
 module.exports = router;

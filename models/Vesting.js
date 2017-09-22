@@ -2,7 +2,8 @@
 
 module.exports = function(sequelize, DataTypes) {
   var Vesting = sequelize.define('Vesting', {
-    "id": { type:DataTypes.INTEGER,primaryKey: true,autoIncrement: true },
+    "ID": { type:DataTypes.INTEGER,primaryKey: true,autoIncrement: true },
+    "RequestID":{ type:DataTypes.INTEGER },
     "AccountNumber": { type: DataTypes.STRING },
     "Name1": { type: DataTypes.STRING },
     "Name2": { type: DataTypes.STRING },
